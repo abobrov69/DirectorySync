@@ -32,8 +32,9 @@ class DirectoriesSynchronizer (object):
                 copy2 (fsrc, base_trg)
                 self.file_log.write (' Copied.\n')
         for f in difference(files_src, files_trg):
+            self.file_log.write("Copying absent file {2} from {1} to {0}.".format(base_trg, base_src, f))
             copy2 (os.path.join(base_src,f), base_trg)
-            self.file_log.write("Copying absent file {2} from {1} to {0}.".format(base_trg, base_src, f)+'\n')
+            self.file_log.write(" Ok."+'\n')
         for f in difference(files_trg, files_src):
             self.file_log.write('File {} is absent in directory {}.'.format(f, base_src))
             if self.deleting_in_target:
@@ -50,10 +51,11 @@ class DirectoriesSynchronizer (object):
                 files_trg = self.walk_target_dict.pop(base_src[self.len_source:])
                 self.sync_files(base_src, files_src, base_trg, files_trg)
             elif not os.path.exists(base_trg):
-                copytree(base_src, base_trg)
                 self.file_log.write(
                    'Copying absent subdirectory {2} from {1} to {0}.'.format(os.path.split(base_trg)[0],
-                                                                            *os.path.split(base_src))+'\n')
+                                                                            *os.path.split(base_src)))
+                copytree(base_src, base_trg)
+                self.file_log.write(' Ok.\n')
         for dir in self.walk_target_dict:
             splt = os.path.split(os.path.join(self.dir_target,dir[1:]))
             if not splt[0][self.len_target:] in self.walk_target_dict:
